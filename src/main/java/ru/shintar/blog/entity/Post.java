@@ -13,6 +13,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Post {
@@ -25,8 +26,8 @@ public class Post {
     String title;
     String content;
     String imageUrl;
-    Integer likesCount = 0;
-    Integer commentCount = 0;
+    Integer likesCount;
+    Integer commentCount;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
