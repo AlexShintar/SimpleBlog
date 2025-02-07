@@ -31,13 +31,6 @@
             background-color: #f4f4f4;
         }
 
-        .actions {
-            text-align: center;
-        }
-
-        .form-container {
-            margin-top: 20px;
-        }
 
         label {
             display: block;
@@ -114,7 +107,20 @@
 </head>
 <body>
 <h1>Лента постов</h1>
+
 <button class="btn-add" onclick="toggleForm()">Добавить пост</button>
+
+<form th:action="@{/}" method="get">
+    <input type="hidden" name="page" th:value="${page.number}">
+    <input type="hidden" name="tag" th:value="${tag}">
+    <label for="size">Постов на странице:</label>
+    <select id="size" name="size" onchange="this.form.submit()">
+        <option value="10" th:selected="${size == 10}">10</option>
+        <option value="20" th:selected="${size == 20}">20</option>
+        <option value="50" th:selected="${size == 50}">50</option>
+    </select>
+</form>
+<br>
 <table>
     <thead>
     <tr>
@@ -159,5 +165,6 @@
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
     }
 </script>
+
 </body>
 </html>

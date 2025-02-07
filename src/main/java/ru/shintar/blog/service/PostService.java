@@ -2,6 +2,8 @@ package ru.shintar.blog.service;
 
 import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.shintar.blog.entity.Post;
@@ -20,6 +22,12 @@ public class PostService {
 
     public List<Post> findAll() {
         var posts = repository.findAll();
+        posts.forEach(this::process);
+        return posts;
+    }
+
+    public Page<Post> getPosts(Pageable pageable) {
+        var posts = repository.findAll(pageable);
         posts.forEach(this::process);
         return posts;
     }
