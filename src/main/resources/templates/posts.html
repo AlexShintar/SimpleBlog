@@ -70,7 +70,7 @@
         }
 
         .info-cell {
-            width: 20%;  /* Расширяем колонку с лайками и комментариями */
+            width: 20%;
             text-align: center;
         }
 
@@ -101,16 +101,15 @@
             <div th:text="${#strings.abbreviate(post.content, 70)}" style="white-space: normal;"></div>
             <br>
             <br>
-            <div th:if="${post.tags != null}">
-                <span th:each="tag : ${post.tags}" th:text="${tag}">Теги...</span>
-            </div>
+            <div th:if="${post.tags != null}" th:text="${post.tags}">Теги...</div>
+
         </td>
         <td class="image-cell">
             <img th:src="${post.imageUrl}" alt="Post Image">
         </td>
         <td class="info-cell">
             <div>Лайки: <span th:text="${post.likesCount}">0</span></div>
-            <div>Комментарии: <span th:text="${post.commentsCount}">0</span></div>
+            <div>Комментарии: <span th:text="${post.commentCount}">0</span></div>
         </td>
         <td>
             <form th:action="@{/posts/{id}(id=${post.id})}" method="post" style="display:inline;">

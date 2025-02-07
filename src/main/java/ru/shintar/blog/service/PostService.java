@@ -15,7 +15,7 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository repository;
-
+    private final TagService tagService;
     Faker faker = new Faker();
 
     public List<Post> findAll() {
@@ -27,6 +27,7 @@ public class PostService {
     @Transactional
     public void save(Post post) {
         repository.save(post);
+        tagService.save(post);
     }
 
     @Transactional
@@ -38,9 +39,11 @@ public class PostService {
             post.setImageUrl("https://picsum.photos/" + faker.random().nextInt(100, 300)
                     + "/" + faker.random().nextInt(100, 200));
             post.setUpdatedAt(LocalDateTime.now());
-
+            StringBuilder tagString = new StringBuilder();
             for (int j = 0; j < faker.random().nextInt(5); j++) {
+                tagString.append(", ").append(faker.animal().name());
             }
+            post.setTags(String.valueOf(tagString));
             save(post);
         }
     }
@@ -48,6 +51,6 @@ public class PostService {
     private void process(Post post) {
         post.setCommentCount(faker.random().nextInt(10));
         post.setLikesCount(faker.random().nextInt(10));
+        post.setTags(tagService.getTags(post));
     }
-
 }

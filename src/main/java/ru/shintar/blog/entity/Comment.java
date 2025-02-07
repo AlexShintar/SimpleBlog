@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Comment {
+
     @Id
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +22,9 @@ public class Comment {
     String content;
 
     @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
     Post post;
 
-    LocalDateTime createdAt;
+    @Column(name = "updated_at")
     LocalDateTime updatedAt;
 }

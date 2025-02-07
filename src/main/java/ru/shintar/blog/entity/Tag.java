@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Table(name = "tags")
 @Data
@@ -22,6 +19,12 @@ public class Tag {
     Long id;
     String name;
 
-    @ManyToMany(mappedBy = "tags")
-    Set<Post> posts = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
+    Post post;
+
+    public Tag(String name, Post post) {
+        this.name = name;
+        this.post = post;
+    }
 }
