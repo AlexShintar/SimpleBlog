@@ -13,7 +13,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Post {
@@ -25,10 +24,16 @@ public class Post {
 
     String title;
     String content;
+
+    @Column(name = "image_url")
     String imageUrl;
     Integer likesCount;
     Integer commentCount;
+
+    @Column(name = "created_at")
     LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     LocalDateTime updatedAt;
 
     @ManyToMany

@@ -15,30 +15,49 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @PropertySource("classpath:application.properties")
 public class DataSourceConfiguration {
+
+    @Value("${spring.datasource.url}")
+    private String url;
+
+    @Value("${spring.datasource.username}")
+    private String username;
+
+    @Value("${spring.datasource.password}")
+    private String password;
+
+    @Value("${spring.datasource.driverClassName}")
+    private String driverClassName;
+
+    @Value("${hibernate.dialect}")
+    private String hibernateDialect;
+
+    @Value("${hibernate.hbm2ddl.auto}")
+    private String hbm2ddlAuto;
+
+
+    // DataSource Bean для подключения к базе данных
     @Bean
-    public DataSource dataSource(
-            @Value("${spring.datasource.url}") String url,
-            @Value("${spring.datasource.username}") String username,
-            @Value("${spring.datasource.password}") String password,
-            @Value("${spring.datasource.driverClassName}") String driverClassName) {
+    public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(driverClassName);
         dataSource.setUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
-
         return dataSource;
     }
 
+    // JdbcTemplate для работы с SQL-запросами
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 
+    // Запуск скрипта при инициализации контекста
     @EventListener
     public void populate(ContextRefreshedEvent event) {
         DataSource dataSource = event.getApplicationContext().getBean(DataSource.class);
@@ -46,28 +65,28 @@ public class DataSourceConfiguration {
         populator.addScript(new ClassPathResource("schema.sql"));
         populator.execute(dataSource);
     }
-
-    // Настройка LocalContainerEntityManagerFactoryBean для работы с JPA
+    // Настройка EntityManagerFactory для работы с JPA
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setDataSource(dataSource);
-        factoryBean.setPackagesToScan("ru.shintar.entity");
-        factoryBean.setJpaVendorAdapter(new org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter());
+        factoryBean.setPackagesToScan("ru.shintar.blog.entity");
 
-        // Настройки Hibernate и JPA
-        java.util.Properties properties = new java.util.Properties();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        properties.put("hibernate.hbm2ddl.auto", "update");
-        properties.put("hibernate.show_sql", "true");
-        properties.put("hibernate.format_sql", "true");
+        // Настройки Hibernate
+        org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter vendorAdapter =
+                new org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter();
+        factoryBean.setJpaVendorAdapter(vendorAdapter);
+
+        // Настройки JPA
+        Properties properties = new Properties();
+        properties.put("hibernate.dialect", hibernateDialect);
+        properties.put("hibernate.hbm2ddl.auto", hbm2ddlAuto);
 
         factoryBean.setJpaProperties(properties);
-
         return factoryBean;
     }
 
-    // Настройка JpaTransactionManager для управления транзакциями
+    // Настройка менеджера транзакций
     @Bean
     public PlatformTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory.getObject());

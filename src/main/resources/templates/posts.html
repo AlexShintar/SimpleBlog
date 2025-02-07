@@ -15,7 +15,7 @@
         }
 
         table {
-            width: 100%;
+            width: 95%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
@@ -44,7 +44,7 @@
         }
 
         input[type="text"], input[type="number"], input[type="checkbox"] {
-            width: 100%;
+            width: 90%;
             padding: 5px;
             margin-top: 5px;
         }
@@ -58,6 +58,17 @@
         .btn-add {
             margin-bottom: 20px;
         }
+
+        .content-cell {
+            width: 40ch;
+            height: 3em; /* Ограничиваем высоту содержимого */
+            overflow: hidden; /* Прячем лишний текст */
+            text-overflow: ellipsis; /* Показываем "..." если текст обрезан */
+            white-space: normal;
+            word-wrap: break-word; /* Разрывает слова, если они длинные */
+            display: block; /* Это важно для того, чтобы высота и переносы работали корректно */
+        }
+
     </style>
 </head>
 <body>
@@ -66,19 +77,20 @@
 <table>
     <thead>
     <tr>
-        <th>ID</th>
-        <th>Заголовок</th>
-        <th>Краткое содержание</th>
+        <!--        <th>ID</th>-->
+        <th>Заголовок и краткое содержание</th>
         <th>Картинка</th>
         <th>Изменен</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="post : ${posts}">
-        <td th:text="${post.id}"/>
-        <td th:text="${post.title}"/>
-        <td th:text="${post.content}"/>
-        <td th:text="${post.imageUrl}"/>
+        <!--        <td th:text="${post.id}"/>-->
+        <td class="content-cell" th:text="${post.title}"/>
+        <td class="content-cell" th:text="${post.content}"/>
+        <td>
+            <img th:src="${post.imageUrl}" alt="Post Image" style="max-width: 100%; height: auto;">
+        </td>
         <td th:text="${post.updatedAt}"/>
         <td>
             <form th:action="@{/posts/{id}(id=${post.id})}" method="post" style="display:inline;">
