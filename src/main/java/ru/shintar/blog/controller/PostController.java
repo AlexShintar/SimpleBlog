@@ -28,7 +28,8 @@ public class PostController {
 
         model.addAttribute("posts", postsPage.getContent());
         model.addAttribute("page", postsPage);
-        model.addAttribute("pageSize", size);
+        model.addAttribute("size", size);
+        model.addAttribute("tag", tag);
 
         return "posts";
     }

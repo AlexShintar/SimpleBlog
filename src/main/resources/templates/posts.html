@@ -15,7 +15,7 @@
         }
 
         table {
-            width: 95%;
+            width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
@@ -31,14 +31,13 @@
             background-color: #f4f4f4;
         }
 
-
         label {
             display: block;
             margin-top: 10px;
         }
 
         input[type="text"], input[type="number"], input[type="checkbox"] {
-            width: 90%;
+            width: 100%;
             padding: 5px;
             margin-top: 5px;
         }
@@ -54,7 +53,7 @@
         }
 
         .content-cell {
-            width: 50%; /* Устанавливаем ширину для заголовка и содержания */
+            width: 50%;
         }
 
         .image-cell {
@@ -68,7 +67,7 @@
         }
 
         img {
-            max-width: 100%;
+            max-width: 300px;
             text-align: center;
             height: auto;
         }
@@ -87,7 +86,6 @@
             text-decoration: underline;
         }
 
-        /* Стиль для кнопки лайка */
         .like-button {
             background: none;
             border: none;
@@ -103,13 +101,72 @@
         .like-count {
             margin-right: 10px;
         }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination form {
+            margin: 0;
+        }
+
+        .pagination a {
+            padding: 10px;
+            margin: 0 5px;
+            text-decoration: none;
+            color: #007bff;
+            display: inline-block;
+        }
+
+        .pagination a:hover {
+            text-decoration: underline;
+        }
+
+        .pagination a.disabled {
+            color: #ccc;
+            pointer-events: none;
+        }
+
+        .form-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #tag {
+            width: 20ch;
+        }
+
+        .search-tag {
+            cursor: pointer;
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .search-tag:hover {
+            color: #0056b3;
+        }
     </style>
 </head>
 <body>
 <h1>Лента постов</h1>
 
-<button class="btn-add" onclick="toggleForm()">Добавить пост</button>
+<div class="form-inline">
+    <button class="btn-add" onclick="toggleForm()">Добавить пост</button>
 
+    <!-- Форма для ввода тега -->
+    <form th:action="@{/}" method="get">
+        <input type="hidden" name="page" th:value="${page.number}">
+        <input type="hidden" name="size" th:value="${size}">
+        <input type="hidden" name="tag" th:value="${tag}">
+        <input type="text" id="tag" name="tag" th:value="${tag}" placeholder="Введите тег" />
+        <span class="search-tag" onclick="this.closest('form').submit()">Поиск по тегу</span>
+    </form>
+</div>
+
+<!-- Форма для выбора количества постов на странице -->
 <form th:action="@{/}" method="get">
     <input type="hidden" name="page" th:value="${page.number}">
     <input type="hidden" name="tag" th:value="${tag}">
@@ -120,7 +177,23 @@
         <option value="50" th:selected="${size == 50}">50</option>
     </select>
 </form>
-<br>
+<div class="pagination">
+    <!-- Ссылка на предыдущую страницу -->
+    <form th:action="@{/}" method="get">
+        <input type="hidden" name="page" th:value="${page.number - 1}" />
+        <input type="hidden" name="tag" th:value="${tag}" />
+        <input type="hidden" name="size" th:value="${size}" />
+        <a href="#" th:if="${!page.first}" th:onclick="this.closest('form').submit()"><-- Предыдущая</a>
+    </form>
+    <!-- Ссылка на следующую страницу -->
+    <form th:action="@{/}" method="get">
+        <input type="hidden" name="page" th:value="${page.number + 1}" />
+        <input type="hidden" name="tag" th:value="${tag}" />
+        <input type="hidden" name="size" th:value="${size}" />
+        <a href="#" th:if="${!page.last}" th:onclick="this.closest('form').submit()">Следующая --></a>
+    </form>
+</div>
+
 <table>
     <thead>
     <tr>
@@ -148,16 +221,32 @@
             <div>Теги: <span th:text="${post.tags}">...</span></div>
         </td>
         <td class="info-cell">
-            <div>
-                <button class="like-button" th:onclick="|location.href='/like/{id}'|">👍</button>
-                <span class="like-count" th:text="${post.likesCount}">0</span>
-            </div>
+            <button class="like-button" th:onclick="|location.href='/like/{id}'|">👍</button>
+            <span class="like-count" th:text="${post.likesCount}">0</span>
             <br>
             <div>Комментарии: <span th:text="${post.commentCount}">0</span></div>
         </td>
     </tr>
     </tbody>
 </table>
+
+<div class="pagination">
+    <!-- Ссылка на предыдущую страницу -->
+    <form th:action="@{/}" method="get">
+        <input type="hidden" name="page" th:value="${page.number - 1}" />
+        <input type="hidden" name="tag" th:value="${tag}" />
+        <input type="hidden" name="size" th:value="${size}" />
+        <a href="#" th:if="${!page.first}" th:onclick="this.closest('form').submit()"><-- Предыдущая</a>
+    </form>
+
+    <!-- Ссылка на следующую страницу -->
+    <form th:action="@{/}" method="get">
+        <input type="hidden" name="page" th:value="${page.number + 1}" />
+        <input type="hidden" name="tag" th:value="${tag}" />
+        <input type="hidden" name="size" th:value="${size}" />
+        <a href="#" th:if="${!page.last}" th:onclick="this.closest('form').submit()">Следующая --></a>
+    </form>
+</div>
 
 <script>
     function toggleForm() {

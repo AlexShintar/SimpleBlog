@@ -40,7 +40,7 @@ public class PostService {
 
     @Transactional
     public void rnd() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 30; i++) {
             Post post = new Post();
             post.setTitle(faker.company().name());
             post.setContent(faker.lorem().sentence(20));
