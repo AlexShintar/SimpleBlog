@@ -23,11 +23,9 @@ public class PostController {
     }
 
     @GetMapping("/rnd")
-    public String fill(Model model) {
+    public String rnd() {
         service.rnd();
-        List<Post> posts = service.findAll();
-        model.addAttribute("posts", posts);
-        return "posts";
+        return "redirect:/";
     }
 }
 

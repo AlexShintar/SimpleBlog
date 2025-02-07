@@ -27,20 +27,16 @@ public class Post {
 
     @Column(name = "image_url")
     String imageUrl;
-    Integer likesCount;
-    Integer commentCount;
 
-    @Column(name = "created_at")
-    LocalDateTime createdAt;
+    @Transient
+    Integer likesCount;
+
+    @Transient
+    Integer commentCount;
 
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
 
-    @ManyToMany
-    @JoinTable(
-            name = "post_tags",
-            joinColumns = @JoinColumn(name = "post_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    Set<Tag> tags = new HashSet<>();
+    @Transient
+    String tags;
 }

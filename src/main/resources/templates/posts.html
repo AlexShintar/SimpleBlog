@@ -24,6 +24,7 @@
             border: 1px solid #ccc;
             padding: 10px;
             text-align: left;
+            vertical-align: top;
         }
 
         th {
@@ -50,8 +51,8 @@
         }
 
         button {
-            padding: 10px 20px;
-            margin-top: 10px;
+            padding: 10px 10px;
+            margin-top: 5px;
             cursor: pointer;
         }
 
@@ -60,38 +61,57 @@
         }
 
         .content-cell {
-            width: 40ch;
-            height: 3em; /* Ограничиваем высоту содержимого */
-            overflow: hidden; /* Прячем лишний текст */
-            text-overflow: ellipsis; /* Показываем "..." если текст обрезан */
-            white-space: normal;
-            word-wrap: break-word; /* Разрывает слова, если они длинные */
-            display: block; /* Это важно для того, чтобы высота и переносы работали корректно */
+            width: 50%;  /* Устанавливаем ширину для заголовка и содержания */
         }
 
+        .image-cell {
+            width: 20%;
+            text-align: center;
+        }
+
+        .info-cell {
+            width: 20%;  /* Расширяем колонку с лайками и комментариями */
+            text-align: center;
+        }
+
+        img {
+            max-width: 100%;
+            text-align: center;
+            height: auto;
+        }
     </style>
 </head>
 <body>
-<h1>Посты</h1>
+<h1>Лента постов</h1>
 <button class="btn-add" onclick="toggleForm()">Добавить пост</button>
 <table>
     <thead>
     <tr>
-        <!--        <th>ID</th>-->
-        <th>Заголовок и краткое содержание</th>
-        <th>Картинка</th>
-        <th>Изменен</th>
+        <th class="content-cell">Заголовок и краткое содержание</th>
+        <th class="image-cell">Картинка</th>
+        <th class="info-cell">Лайки и комментарии</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="post : ${posts}">
-        <!--        <td th:text="${post.id}"/>-->
-        <td class="content-cell" th:text="${post.title}"/>
-        <td class="content-cell" th:text="${post.content}"/>
-        <td>
-            <img th:src="${post.imageUrl}" alt="Post Image" style="max-width: 100%; height: auto;">
+        <td class="content-cell">
+            <div th:text="${post.title}"></div>
+            <br>
+            <br>
+            <div th:text="${#strings.abbreviate(post.content, 70)}" style="white-space: normal;"></div>
+            <br>
+            <br>
+            <div th:if="${post.tags != null}">
+                <span th:each="tag : ${post.tags}" th:text="${tag}">Теги...</span>
+            </div>
         </td>
-        <td th:text="${post.updatedAt}"/>
+        <td class="image-cell">
+            <img th:src="${post.imageUrl}" alt="Post Image">
+        </td>
+        <td class="info-cell">
+            <div>Лайки: <span th:text="${post.likesCount}">0</span></div>
+            <div>Комментарии: <span th:text="${post.commentsCount}">0</span></div>
+        </td>
         <td>
             <form th:action="@{/posts/{id}(id=${post.id})}" method="post" style="display:inline;">
                 <input type="hidden" name="_method" value="delete">
@@ -104,7 +124,7 @@
 
 <script>
     function toggleForm() {
-        const form = document.getElementById('userForm');
+        const form = document.getElementById('post');
         form.style.display = form.style.display === 'none' ? 'block' : 'none';
     }
 </script>
