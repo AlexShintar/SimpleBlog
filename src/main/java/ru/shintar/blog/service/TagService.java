@@ -23,7 +23,10 @@ public class TagService {
             return;
         }
         Arrays.stream(post.getTags().split(","))
-                .forEach(t -> repository.save(new Tag(t, post)));
+                .filter(StringUtils::isNotBlank)
+                .map(String::trim)
+                .collect(Collectors.toSet())
+                .forEach(tag -> repository.save(new Tag(tag, post)));
     }
 
     public String getTags(Post post) {

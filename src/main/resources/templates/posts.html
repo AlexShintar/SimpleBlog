@@ -61,7 +61,7 @@
         }
 
         .content-cell {
-            width: 50%;  /* Устанавливаем ширину для заголовка и содержания */
+            width: 50%; /* Устанавливаем ширину для заголовка и содержания */
         }
 
         .image-cell {
@@ -79,6 +79,37 @@
             text-align: center;
             height: auto;
         }
+
+        .post-title {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .post-title a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .post-title a:hover {
+            text-decoration: underline;
+        }
+
+        /* Стиль для кнопки лайка */
+        .like-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #007bff;
+        }
+
+        .like-button:hover {
+            color: #0056b3;
+        }
+
+        .like-count {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -87,35 +118,36 @@
 <table>
     <thead>
     <tr>
-        <th class="content-cell">Заголовок и краткое содержание</th>
         <th class="image-cell">Картинка</th>
+        <th class="content-cell">Заголовок и краткое содержание</th>
         <th class="info-cell">Лайки и комментарии</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="post : ${posts}">
+        <td class="image-cell">
+            <a th:href="@{/post/{id}(id=${post.id})}">
+                <img th:src="${post.imageUrl}" alt="Post Image">
+            </a>
+        </td>
         <td class="content-cell">
-            <div th:text="${post.title}"></div>
+            <div class="post-title">
+                <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}"></a>
+            </div>
             <br>
             <br>
             <div th:text="${#strings.abbreviate(post.content, 70)}" style="white-space: normal;"></div>
             <br>
             <br>
-            <div th:if="${post.tags != null}" th:text="${post.tags}">Теги...</div>
-
-        </td>
-        <td class="image-cell">
-            <img th:src="${post.imageUrl}" alt="Post Image">
+            <div>Теги: <span th:text="${post.tags}">...</span></div>
         </td>
         <td class="info-cell">
-            <div>Лайки: <span th:text="${post.likesCount}">0</span></div>
+            <div>
+                <button class="like-button" th:onclick="|location.href='/like/{id}'|">👍</button>
+                <span class="like-count" th:text="${post.likesCount}">0</span>
+            </div>
+            <br>
             <div>Комментарии: <span th:text="${post.commentCount}">0</span></div>
-        </td>
-        <td>
-            <form th:action="@{/posts/{id}(id=${post.id})}" method="post" style="display:inline;">
-                <input type="hidden" name="_method" value="delete">
-                <button type="submit">Редактировать</button>
-            </form>
         </td>
     </tr>
     </tbody>
