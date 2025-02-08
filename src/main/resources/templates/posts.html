@@ -190,7 +190,6 @@
         }
     }
 </script>
-
 <!-- Форма для выбора количества постов на странице -->
 <form th:action="@{/}" method="get">
     <input type="hidden" name="page" th:value="${page.number}">
@@ -246,8 +245,16 @@
             <div>Теги: <span th:text="${post.tags}">...</span></div>
         </td>
         <td class="info-cell">
-            <button class="like-button" th:onclick="|location.href='/like/{id}'|">👍</button>
-            <span class="like-count" th:text="${post.likesCount}">0</span>
+
+            <form th:action="@{/like/{id}(id=${post.id})}" method="post">
+                <input type="hidden" name="page" th:value="${page.number}">
+                <input type="hidden" name="size" th:value="${size}">
+                <input type="hidden" name="tag" th:value="${tag}">
+
+                <button class="like-button">👍</button>
+                <span class="like-count" th:text="${post.likesCount}">0</span>
+            </form>
+
             <br>
             <div>Комментарии: <span th:text="${post.commentCount}">0</span></div>
         </td>

@@ -17,6 +17,7 @@ public class PostService {
 
     private final PostRepository repository;
     private final TagService tagService;
+    private final LikeService likeService;
     Faker faker = new Faker();
 
     public Page<Post> getPosts(Pageable pageable, String tag) {
@@ -54,7 +55,7 @@ public class PostService {
 
     private void process(Post post) {
         post.setCommentCount(faker.random().nextInt(10));
-        post.setLikesCount(faker.random().nextInt(10));
+        post.setLikesCount(likeService.getLikeCount(post));
         post.setTags(tagService.getTags(post));
     }
 }

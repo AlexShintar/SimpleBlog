@@ -7,5 +7,5 @@ import ru.shintar.blog.entity.Post;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
-    long countByPost(Post post);
+    int countByPost(Post post);
 }

@@ -36,7 +36,6 @@ public class PostController {
         return "posts";
     }
 
-
     @GetMapping("/rnd")
     public String rnd() {
         service.rnd();
@@ -62,7 +61,6 @@ public class PostController {
 
         return "redirect:/";
     }
-
 }
 
 
