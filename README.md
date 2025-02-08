@@ -42,5 +42,7 @@
 ```
 SimpleBlog.war необходимо скопировать в папку webapps в директории Tomcat
 
-Болог будет доступен по адресу http://localhost:8080/SimpleBlog/
+Блог будет доступен по адресу http://localhost:8080/SimpleBlog/
+
+Тестовыми данными блог можно заполнить запросом http://localhost:8080/SimpleBlog/rnd 
 
