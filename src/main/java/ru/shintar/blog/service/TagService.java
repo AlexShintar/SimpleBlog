@@ -9,7 +9,6 @@ import ru.shintar.blog.entity.Tag;
 import ru.shintar.blog.repository.TagRepository;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -30,17 +29,6 @@ public class TagService {
                 .distinct()
                 .forEach(tag -> tagRepository.save(new Tag(tag, post)));
     }
-
-    @Transactional
-    public void update(Post post) {
-
-        List<Tag> existingTags = tagRepository.findAllByPost(post);
-        if (!existingTags.isEmpty()) {
-            tagRepository.deleteAll(existingTags); // Удаляем только если есть что удалять
-        }
-        save(post);
-    }
-
 
     public String getTags(Post post) {
         var tags = tagRepository.findAllByPost(post);
