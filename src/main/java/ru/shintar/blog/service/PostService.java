@@ -10,7 +10,6 @@ import ru.shintar.blog.entity.Post;
 import ru.shintar.blog.repository.PostRepository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -20,14 +19,11 @@ public class PostService {
     private final TagService tagService;
     Faker faker = new Faker();
 
-    public List<Post> findAll() {
-        var posts = repository.findAll();
-        posts.forEach(this::process);
-        return posts;
-    }
+    public Page<Post> getPosts(Pageable pageable, String tag) {
+        Page<Post> posts = (tag == null || tag.isBlank())
+                ? repository.findAll(pageable)
+                : repository.findByTag(tag, pageable);
 
-    public Page<Post> getPosts(Pageable pageable) {
-        var posts = repository.findAll(pageable);
         posts.forEach(this::process);
         return posts;
     }
