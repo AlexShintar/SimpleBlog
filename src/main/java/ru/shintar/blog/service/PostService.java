@@ -1,6 +1,7 @@
 package ru.shintar.blog.service;
 
 import com.github.javafaker.Faker;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,13 @@ public class PostService {
 
         posts.forEach(this::process);
         return posts;
+    }
+
+    public Post getPostById(Long id) {
+        Post post = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Пост не найден"));
+        process(post);
+        return post;
     }
 
     @Transactional

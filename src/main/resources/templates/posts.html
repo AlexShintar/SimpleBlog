@@ -247,10 +247,9 @@
         <td class="info-cell">
 
             <form th:action="@{/like/{id}(id=${post.id})}" method="post">
+                <input type="hidden" name="tag" th:value="${tag}">
                 <input type="hidden" name="page" th:value="${page.number}">
                 <input type="hidden" name="size" th:value="${size}">
-                <input type="hidden" name="tag" th:value="${tag}">
-
                 <button class="like-button">👍</button>
                 <span class="like-count" th:text="${post.likesCount}">0</span>
             </form>
