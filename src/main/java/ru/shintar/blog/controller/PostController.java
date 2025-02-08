@@ -1,26 +1,26 @@
 package ru.shintar.blog.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import ru.shintar.blog.entity.Comment;
 import ru.shintar.blog.entity.Post;
+import ru.shintar.blog.service.CommentService;
 import ru.shintar.blog.service.PostService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 public class PostController {
 
-    private final PostService service;
+    private final PostService postService;
+    private final CommentService commentService;
 
     @GetMapping
     public String posts(
@@ -29,7 +29,7 @@ public class PostController {
             @RequestParam(name = "tag", required = false) String tag,
             Model model) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> postsPage = service.getPosts(pageable, tag);
+        Page<Post> postsPage = postService.getPosts(pageable, tag);
 
         model.addAttribute("posts", postsPage.getContent());
         model.addAttribute("page", postsPage);
@@ -41,7 +41,7 @@ public class PostController {
 
     @GetMapping("/rnd")
     public String rnd() {
-        service.rnd();
+        postService.rnd();
         return "redirect:/";
     }
 
@@ -60,19 +60,33 @@ public class PostController {
             post.setTags(tags);
         }
 
-        service.save(post);
+        postService.save(post);
         return "redirect:/";
     }
 
     @GetMapping("/post/{id}")
-    public String getPost(@PathVariable Long id, Model model, HttpServletRequest request) {
-        Post post = service.getPostById(id);
+    public String getPost(@PathVariable Long id, Model model) {
+        Post post = postService.getPostById(id);
 
-        String currentUrl = request.getRequestURI().replaceFirst(request.getContextPath(), "");
+        List<Comment> comments = commentService.getComments(post);
 
         model.addAttribute("post", post);
-        model.addAttribute("currentUrl", currentUrl);
+        model.addAttribute("comments", comments);
+        model.addAttribute("currentUrl",  "/post/" + id);
         return "post";
     }
+
+    @PostMapping("/post/edit/{id}")
+    public String editPost(@PathVariable Long id, @ModelAttribute Post postData) {
+        postService.updatePost(id, postData);
+        return "redirect:/post/" + id;
+    }
+
+    @PostMapping("/post/delete/{id}")
+    public String deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
+        return "redirect:/";
+    }
+
 }
 

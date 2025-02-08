@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequiredArgsConstructor
 public class LikeController {
 
-    private final LikeService service;
+    private final LikeService likeService;
 
     @PostMapping("/like/{id}")
     public String likePost(@PathVariable Long id,
@@ -19,7 +19,7 @@ public class LikeController {
                            @RequestParam(required = false) Integer size,
                            @RequestParam(required = false) String tag,
                            @RequestParam(required = false) String returnUrl) {
-        service.likePost(id);
+        likeService.likePost(id);
 
         if (returnUrl != null) {
             return "redirect:" + returnUrl;

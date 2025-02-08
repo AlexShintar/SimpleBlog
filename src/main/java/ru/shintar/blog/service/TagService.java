@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class TagService {
 
-    private final TagRepository repository;
+    private final TagRepository tagRepository;
 
     @Transactional
     public void save(Post post) {
@@ -28,25 +28,29 @@ public class TagService {
                 .filter(StringUtils::isNotBlank)
                 .map(String::trim)
                 .distinct()
-                .forEach(tag -> repository.save(new Tag(tag, post)));
+                .forEach(tag -> tagRepository.save(new Tag(tag, post)));
     }
 
     @Transactional
     public void update(Post post) {
 
-        List<Tag> existingTags = repository.findAllByPost(post);
+        List<Tag> existingTags = tagRepository.findAllByPost(post);
         if (!existingTags.isEmpty()) {
-            repository.deleteAll(existingTags); // Удаляем только если есть что удалять
+            tagRepository.deleteAll(existingTags); // Удаляем только если есть что удалять
         }
         save(post);
     }
 
 
     public String getTags(Post post) {
-        var tags = repository.findAllByPost(post);
+        var tags = tagRepository.findAllByPost(post);
         String tagString = tags.stream()
                 .map(Tag::getName)
                 .collect(Collectors.joining(", "));
         return tagString;
+    }
+    @Transactional
+    public void deleteTagsByPostId(Long id) {
+        tagRepository.deleteByPostId(id);
     }
 }

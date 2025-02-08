@@ -22,10 +22,6 @@
             height: auto;
             border-radius: 5px;
         }
-        .tags {
-            color: #007bff;
-            font-style: italic;
-        }
         .post-interactions {
             margin-top: 20px;
         }
@@ -43,17 +39,86 @@
             margin-left: 10px;
             font-size: 1.2em;
         }
+        .comments {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .comment {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+        .comment-time {
+            font-size: 0.8em;
+            color: #666;
+        }
+        .post-actions {
+            margin-bottom: 20px;
+        }
+        .post-actions button {
+            margin: 5px;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            border-radius: 5px;
+        }
+
+        .hidden-form {
+            display: none;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
     </style>
+    <script>
+        function toggleForm(formId) {
+            var form = document.getElementById(formId);
+            form.style.display = form.style.display === "none" ? "block" : "none";
+        }
+    </script>
 </head>
 <body>
 
 <div class="container">
     <h1 th:text="${post.title}"></h1>
+
+    <div class="post-actions">
+        <button class="edit-button" onclick="toggleForm('editForm')">Редактировать</button>
+        <button class="delete-button" onclick="toggleForm('deleteForm')">Удалить</button>
+    </div>
+
+    <div id="deleteForm" class="hidden-form">
+        <h2>Вы уверены, что хотите удалить пост?</h2>
+        <form th:action="@{/post/delete/{id}(id=${post.id})}" method="post">
+            <button type="submit" class="delete-button">Подтвердить удаление</button>
+            <button type="button" onclick="toggleForm('deleteForm')">Отмена</button>
+        </form>
+    </div>
+
+    <div id="editForm" class="hidden-form">
+        <h2>Редактировать пост</h2>
+        <form th:action="@{/post/edit/{id}(id=${post.id})}" method="post">
+            <label for="title">Заголовок:</label>
+            <input type="text" id="title" name="title" th:value="${post.title}" required>
+
+            <label for="content">Содержание:</label>
+            <textarea id="content" name="content" required style="width: 100%; height: 150px;" th:text="${post.content}"></textarea>
+
+            <label for="imageUrl">URL изображения:</label>
+            <input type="text" id="imageUrl" name="imageUrl" th:value="${post.imageUrl}" required>
+
+            <label for="tags">Теги (через запятую):</label>
+            <input type="text" id="tags" name="tags" th:value="${post.tags}">
+
+            <button type="submit">Сохранить</button>
+            <button type="button" onclick="toggleForm('editForm')">Отмена</button>
+        </form>
+    </div>
+
     <img th:src="${post.imageUrl}" alt="Изображение поста">
     <p th:text="${post.content}"></p>
     <p class="tags">Теги: <span th:text="${post.tags}"></span></p>
 
-    <!-- Блок взаимодействий -->
     <div class="post-interactions">
         <form th:action="@{/like/{id}(id=${post.id})}" method="post">
             <input type="hidden" name="returnUrl" th:value="${currentUrl}" />
@@ -61,6 +126,13 @@
             <span class="like-count" th:text="${post.likesCount}">0</span>
         </form>
         <div>Комментарии: <span th:text="${post.commentCount}">0</span></div>
+    </div>
+
+    <div class="comments">
+        <div th:each="comment : ${comments}" class="comment">
+            <p th:text="${comment.content}"></p>
+            <span class="comment-time" th:text="${#temporals.format(comment.updatedAt, 'dd-MM-yyyy HH:mm')}"></span>
+        </div>
     </div>
 
     <a href="javascript:history.back()">Назад к ленте</a>

@@ -16,22 +16,23 @@ import java.time.LocalDateTime;
 @Service
 public class PostService {
 
-    private final PostRepository repository;
+    private final PostRepository postRepository;
     private final TagService tagService;
     private final LikeService likeService;
+    private final CommentService commentService;
     Faker faker = new Faker();
 
     public Page<Post> getPosts(Pageable pageable, String tag) {
         Page<Post> posts = (tag == null || tag.isBlank())
-                ? repository.findAll(pageable)
-                : repository.findByTag(tag, pageable);
+                ? postRepository.findAll(pageable)
+                : postRepository.findByTag(tag, pageable);
 
         posts.forEach(this::process);
         return posts;
     }
 
     public Post getPostById(Long id) {
-        Post post = repository.findById(id)
+        Post post = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Пост не найден"));
         process(post);
         return post;
@@ -39,7 +40,7 @@ public class PostService {
 
     @Transactional
     public void save(Post post) {
-        repository.save(post);
+        postRepository.save(post);
         tagService.save(post);
     }
 
@@ -52,18 +53,45 @@ public class PostService {
             post.setImageUrl("https://picsum.photos/" + faker.random().nextInt(100, 300)
                     + "/" + faker.random().nextInt(100, 200));
             post.setUpdatedAt(LocalDateTime.now());
+
             StringBuilder tagString = new StringBuilder();
-            for (int j = 0; j < faker.random().nextInt(5); j++) {
+            for (int j = 0; j < faker.random().nextInt(10); j++) {
                 tagString.append(", ").append(faker.animal().name());
             }
+
             post.setTags(String.valueOf(tagString));
             save(post);
+
+            for (int j = 0; j < faker.random().nextInt(10); j++) {
+                commentService.addComment(post, faker.lorem().sentence(10));
+            }
         }
     }
 
     private void process(Post post) {
-        post.setCommentCount(faker.random().nextInt(10));
+        post.setCommentCount(commentService.getCommentCount(post));
         post.setLikesCount(likeService.getLikeCount(post));
         post.setTags(tagService.getTags(post));
+    }
+
+    @Transactional
+    public void updatePost(Long id, Post updatedPost) {
+        Post post = getPostById(id);
+        tagService.deleteTagsByPostId(id);
+        post.setTitle(updatedPost.getTitle());
+        post.setContent(updatedPost.getContent());
+        post.setImageUrl(updatedPost.getImageUrl());
+        post.setUpdatedAt(LocalDateTime.now());
+        post.setTags(updatedPost.getTags());
+        save(post);
+    }
+
+    @Transactional
+    public void deletePost(Long id) {
+        Post post = getPostById(id);
+        commentService.deleteCommentsByPostId(id);
+        likeService.deleteLikesByPostId(id);
+        tagService.deleteTagsByPostId(id);
+        postRepository.delete(post);
     }
 }
