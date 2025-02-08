@@ -63,7 +63,7 @@ public class PostService {
             save(post);
 
             for (int j = 0; j < faker.random().nextInt(10); j++) {
-                commentService.addComment(post, faker.lorem().sentence(10));
+                commentService.addComment(post.getId(), faker.lorem().sentence(10));
             }
         }
     }

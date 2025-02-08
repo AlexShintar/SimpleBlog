@@ -1,5 +1,6 @@
 package ru.shintar.blog.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,50 +11,47 @@ import ru.shintar.blog.repository.PostRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
 
     public List<Comment> getComments(Post post) {
         return commentRepository.findAllByPost(post);
     }
 
-    public Optional<Comment> getCommentById(Long id) {
-        return commentRepository.findById(id);
-    }
-
     @Transactional
-    public Comment addComment(Post post, String content) {
-
+    public void addComment(Long postId, String content) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Пост не найден"));
         Comment comment = new Comment();
         comment.setContent(content);
         comment.setPost(post);
         comment.setUpdatedAt(LocalDateTime.now());
-
-        return commentRepository.save(comment);
+        commentRepository.save(comment);
     }
 
     @Transactional
-    public Comment updateComment(Long id, String newContent) {
+    public Long updateComment(Long id, String newContent) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
 
         comment.setContent(newContent);
         comment.setUpdatedAt(LocalDateTime.now());
-
-        return commentRepository.save(comment);
+        commentRepository.save(comment);
+        return comment.getPost().getId();
     }
 
     @Transactional
-    public void deleteComment(Long id) {
-        if (!commentRepository.existsById(id)) {
-            throw new RuntimeException("Комментарий не найден");
-        }
+    public Long deleteComment(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
+        Long postId = comment.getPost().getId();
         commentRepository.deleteById(id);
+        return postId;
     }
 
     public int getCommentCount(Post post) {
