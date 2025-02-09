@@ -1,8 +1,8 @@
 package ru.shintar.blog.service;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.shintar.blog.entity.Post;
 import ru.shintar.blog.entity.Tag;

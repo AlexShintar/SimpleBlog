@@ -1,8 +1,9 @@
 package ru.shintar.blog.service;
 
-import com.github.javafaker.Faker;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import net.datafaker.Faker;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,9 @@ public class PostService {
             Post post = new Post();
             post.setTitle(faker.company().name());
             post.setContent(faker.lorem().sentence(20));
-            post.setImageUrl("https://picsum.photos/" + faker.random().nextInt(100, 300)
+            post.setImageUrl("https://picsum.photos/id/"
+                    + faker.random().nextInt(90)
+                    + "/" + faker.random().nextInt(200, 300)
                     + "/" + faker.random().nextInt(100, 200));
 //            post.setUpdatedAt(LocalDateTime.now());
 
