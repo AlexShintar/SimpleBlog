@@ -93,7 +93,8 @@
     <script>
         function toggleForm(formId) {
             var form = document.getElementById(formId);
-            form.style.display = form.style.display === "none" ? "block" : "none";
+            var currentDisplay = window.getComputedStyle(form).display;
+            form.style.display = (currentDisplay === "none") ? "block" : "none";
         }
     </script>
 </head>

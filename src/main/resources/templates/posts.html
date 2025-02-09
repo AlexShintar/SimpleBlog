@@ -183,11 +183,7 @@
 <script>
     function toggleForm() {
         var form = document.getElementById("addPostForm");
-        if (form.style.display === "none") {
-            form.style.display = "block";
-        } else {
-            form.style.display = "none";
-        }
+        form.style.display = form.style.display === "none" ? "block" : "none";
     }
 </script>
 <!-- Форма для выбора количества постов на странице -->
