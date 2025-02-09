@@ -13,6 +13,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p JOIN Tag t ON p.id = t.post.id WHERE t.name = :tag")
     Page<Post> findByTag(@Param("tag") String tag, Pageable pageable);
-
-
 }

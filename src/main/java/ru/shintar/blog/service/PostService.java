@@ -33,8 +33,8 @@ public class PostService {
 
     public Post getPostById(Long id) {
         Post post = postRepository.findById(id)
+                .map(this::process)
                 .orElseThrow(() -> new EntityNotFoundException("Пост не найден"));
-        process(post);
         return post;
     }
 
@@ -52,14 +52,15 @@ public class PostService {
             post.setContent(faker.lorem().sentence(20));
             post.setImageUrl("https://picsum.photos/" + faker.random().nextInt(100, 300)
                     + "/" + faker.random().nextInt(100, 200));
-            post.setUpdatedAt(LocalDateTime.now());
+//            post.setUpdatedAt(LocalDateTime.now());
 
             StringBuilder tagString = new StringBuilder();
+            tagString.append(faker.animal().name());
+
             for (int j = 0; j < faker.random().nextInt(10); j++) {
                 tagString.append(", ").append(faker.animal().name());
             }
-
-            post.setTags(String.valueOf(tagString));
+            post.setTags(tagString.toString());
             save(post);
 
             for (int j = 0; j < faker.random().nextInt(10); j++) {
@@ -68,10 +69,11 @@ public class PostService {
         }
     }
 
-    private void process(Post post) {
+    private Post process(Post post) {
         post.setCommentCount(commentService.getCommentCount(post));
         post.setLikesCount(likeService.getLikeCount(post));
         post.setTags(tagService.getTags(post));
+        return post;
     }
 
     @Transactional
@@ -88,10 +90,9 @@ public class PostService {
 
     @Transactional
     public void deletePost(Long id) {
-        Post post = getPostById(id);
         commentService.deleteCommentsByPostId(id);
         likeService.deleteLikesByPostId(id);
         tagService.deleteTagsByPostId(id);
-        postRepository.delete(post);
+        postRepository.deleteById(id);
     }
 }

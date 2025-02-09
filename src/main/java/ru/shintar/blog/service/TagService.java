@@ -19,11 +19,12 @@ public class TagService {
 
     @Transactional
     public void save(Post post) {
-        if (StringUtils.isBlank(post.getTags())) {
+        String tagsString = post.getTags();
+        if (StringUtils.isBlank(tagsString)) {
             return;
         }
 
-        Arrays.stream(post.getTags().split(","))
+        Arrays.stream(tagsString.split(","))
                 .filter(StringUtils::isNotBlank)
                 .map(String::trim)
                 .distinct()
@@ -31,11 +32,11 @@ public class TagService {
     }
 
     public String getTags(Post post) {
-        var tags = tagRepository.findAllByPost(post);
-        String tagString = tags.stream()
+
+        return tagRepository.findAllByPost(post)
+                .stream()
                 .map(Tag::getName)
                 .collect(Collectors.joining(", "));
-        return tagString;
     }
     @Transactional
     public void deleteTagsByPostId(Long id) {

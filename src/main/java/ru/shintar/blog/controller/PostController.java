@@ -14,6 +14,7 @@ import ru.shintar.blog.service.PostService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -54,11 +55,8 @@ public class PostController {
         post.setTitle(title);
         post.setContent(content);
         post.setImageUrl(imageUrl);
-        post.setUpdatedAt(LocalDateTime.now());
-
-        if (tags != null) {
-            post.setTags(tags);
-        }
+//        post.setUpdatedAt(LocalDateTime.now());
+        post.setTags(Optional.ofNullable(tags).orElse(""));
 
         postService.save(post);
         return "redirect:/";

@@ -37,4 +37,10 @@ public class Post {
 
     @Transient
     String tags;
+
+    @PrePersist
+    @PreUpdate
+    private void updateTimestamp() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

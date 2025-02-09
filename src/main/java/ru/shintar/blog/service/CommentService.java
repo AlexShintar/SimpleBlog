@@ -37,7 +37,7 @@ public class CommentService {
     @Transactional
     public Long updateComment(Long id, String newContent) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Комментарий не найден"));
 
         comment.setContent(newContent);
         comment.setUpdatedAt(LocalDateTime.now());
@@ -48,9 +48,9 @@ public class CommentService {
     @Transactional
     public Long deleteComment(Long id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Комментарий не найден"));
         Long postId = comment.getPost().getId();
-        commentRepository.deleteById(id);
+        commentRepository.delete(comment);
         return postId;
     }
 

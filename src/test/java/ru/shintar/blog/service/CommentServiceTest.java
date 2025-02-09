@@ -113,7 +113,7 @@ class CommentServiceTest {
         Long postId = commentService.deleteComment(1L);
 
         assertEquals(1L, postId);
-        verify(commentRepository, times(1)).deleteById(1L);
+        verify(commentRepository, times(1)).delete(testComment);
     }
 
     @Test

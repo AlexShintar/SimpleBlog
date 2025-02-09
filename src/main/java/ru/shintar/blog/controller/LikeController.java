@@ -15,8 +15,8 @@ public class LikeController {
 
     @PostMapping("/like/{id}")
     public String likePost(@PathVariable Long id,
-                           @RequestParam(required = false) Integer page,
-                           @RequestParam(required = false) Integer size,
+                           @RequestParam(required = false, defaultValue = "0") Integer page,
+                           @RequestParam(required = false, defaultValue = "10") Integer size,
                            @RequestParam(required = false) String tag,
                            @RequestParam(required = false) String returnUrl) {
         likeService.likePost(id);
@@ -25,8 +25,7 @@ public class LikeController {
             return "redirect:" + returnUrl;
         }
 
-        return "redirect:/?page=" + (page != null ? page : 0) +
-                "&size=" + (size != null ? size : 10) +
+        return "redirect:/?page=" + page + "&size=" + size +
                 (tag != null ? "&tag=" + tag : "");
     }
 }

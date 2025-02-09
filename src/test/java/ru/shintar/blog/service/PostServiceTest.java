@@ -75,6 +75,6 @@ class PostServiceTest {
 
         postService.deletePost(postId);
 
-        verify(postRepository, times(1)).delete(post);
+        verify(postRepository, times(1)).deleteById(postId);
     }
 }
