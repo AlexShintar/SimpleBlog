@@ -2,6 +2,7 @@ package ru.shintar.blog.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.shintar.blog.model.Like;
 import ru.shintar.blog.repository.LikeRepository;
 
@@ -11,7 +12,7 @@ import ru.shintar.blog.repository.LikeRepository;
 public class LikeService {
 
     private final LikeRepository likeRepository;
-
+    @Transactional
     public void likePost(Long postId) {
         Like like = new Like();
         like.setPostId(postId);
