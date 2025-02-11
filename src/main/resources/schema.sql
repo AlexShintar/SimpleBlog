@@ -1,0 +1,31 @@
+CREATE TABLE IF NOT EXISTS posts
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title      VARCHAR(255) NOT NULL,
+    content    TEXT         NOT NULL,
+    image_url  VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS comments
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    post_id    BIGINT NOT NULL,
+    content    TEXT   NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS tags
+(
+    id      BIGINT AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT       NOT NULL,
+    name    VARCHAR(255) NOT NULL,
+    FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS likes
+(
+    id      BIGINT AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT NOT NULL,
+    FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE
+);

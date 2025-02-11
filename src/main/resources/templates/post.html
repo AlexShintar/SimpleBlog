@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${post.title}">Пост</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        img {
+            max-width: 500px;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .post-interactions {
+            margin-top: 20px;
+        }
+
+        .like-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #007bff;
+        }
+
+        .like-button:hover {
+            color: #0056b3;
+        }
+
+        .like-count {
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+
+        .comments {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .comment {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+
+        .comment-time {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .post-actions {
+            margin-bottom: 20px;
+        }
+
+        .post-actions button {
+            margin: 5px;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            border-radius: 5px;
+        }
+
+        .hidden-form {
+            display: none;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .comment-actions a {
+            font-size: 0.7em;
+        }
+
+        textarea {
+            width: 100%;
+            height: 50px;
+        }
+    </style>
+    <script>
+        function toggleForm(formId) {
+            var form = document.getElementById(formId);
+            var currentDisplay = window.getComputedStyle(form).display;
+            form.style.display = (currentDisplay === "none") ? "block" : "none";
+        }
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <h1 th:text="${post.title}"></h1>
+
+    <div class="post-actions">
+        <button class="edit-button" onclick="toggleForm('editForm')">Редактировать</button>
+        <button class="delete-button" onclick="toggleForm('deleteForm')">Удалить</button>
+    </div>
+
+    <div id="deleteForm" class="hidden-form">
+        <h2>Вы уверены, что хотите удалить пост?</h2>
+        <form th:action="@{/post/{id}/delete(id=${post.id})}" method="post">
+            <button type="submit" class="delete-button">Подтвердить удаление</button>
+            <button type="button" onclick="toggleForm('deleteForm')">Отмена</button>
+        </form>
+    </div>
+
+    <div id="editForm" class="hidden-form">
+        <h2>Редактировать пост</h2>
+        <form th:action="@{/post/{id}/edit(id=${post.id})}" method="post">
+            <label for="title">Заголовок:</label>
+            <input type="text" id="title" name="title" th:value="${post.title}" required>
+
+            <label for="content">Содержание:</label>
+            <textarea id="content" name="content" required th:text="${post.content}"></textarea>
+
+            <label for="imageUrl">URL изображения:</label>
+            <input type="text" id="imageUrl" name="imageUrl" th:value="${post.imageUrl}" required>
+
+            <label for="tags">Теги (через запятую):</label>
+            <input type="text" id="tags" name="tags" th:value="${post.tags}">
+
+            <button type="submit">Сохранить</button>
+            <button type="button" onclick="toggleForm('editForm')">Отмена</button>
+        </form>
+    </div>
+
+    <img th:src="${post.imageUrl}" alt="Изображение поста">
+    <p th:text="${post.content}"></p>
+    <p class="tags">Теги: <span th:text="${post.tags}"></span></p>
+
+    <div class="post-interactions">
+        <form th:action="@{/like/{id}(id=${post.id})}" method="post">
+            <input type="hidden" name="returnUrl" th:value="${currentUrl}"/>
+            <button type="submit" class="like-button">👍</button>
+            <span class="like-count" th:text="${post.likesCount}">0</span>
+        </form>
+        <div>Комментарии: <span th:text="${post.commentCount}">0</span></div>
+    </div>
+    <br>
+    <button onclick="toggleForm('commentForm')">Комментировать</button>
+    <div id="commentForm" class="hidden-form">
+        <h2>Добавить комментарий</h2>
+        <form th:action="@{/comment/add}" method="post">
+            <textarea name="content" required></textarea>
+            <input type="hidden" name="postId" th:value="${post.id}">
+            <button type="submit">Отправить</button>
+            <button type="button" onclick="toggleForm('commentForm')">Отмена</button>
+        </form>
+    </div>
+
+    <div class="comments">
+        <div th:each="comment : ${comments}" class="comment">
+            <p th:text="${comment.content}"></p>
+            <span class="comment-time" th:text="${#temporals.format(comment.updatedAt, 'dd-MM-yyyy HH:mm')}"></span>
+            <span class="comment-actions">
+                <a href="#" th:attr="onclick=|toggleForm('editCommentForm' + ${comment.id})|">Редактировать</a> |
+                <a th:href="@{/comment/{id}/delete(id=${comment.id})}">Удалить комментарий</a>
+            </span>
+            <div th:id="|editCommentForm${comment.id}|" class="hidden-form">
+                <h2>Редактировать</h2>
+                <form th:action="@{/comment/{id}/edit(id=${comment.id})}" method="post">
+                    <label th:for="|editContent${comment.id}|">Комментарий:</label>
+                    <textarea th:id="|editContent${comment.id}|" name="content" required
+                              th:text="${comment.content}"></textarea>
+                    <button type="submit">Сохранить</button>
+                    <button type="button" th:attr="onclick=|toggleForm('editCommentForm' + ${comment.id})|">Отмена
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <a href="javascript:history.back()">Назад к ленте</a>
+</div>
+
+</body>
+</html>

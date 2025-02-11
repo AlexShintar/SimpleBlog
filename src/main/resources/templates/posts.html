@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лента постов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"], input[type="number"], input[type="checkbox"] {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 10px 10px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+
+        .btn-add {
+            margin-bottom: 20px;
+        }
+
+        .content-cell {
+            width: 50%;
+        }
+
+        .image-cell {
+            width: 20%;
+            text-align: center;
+        }
+
+        .info-cell {
+            width: 20%;
+            text-align: center;
+        }
+
+        img {
+            max-width: 300px;
+            text-align: center;
+            height: auto;
+        }
+
+        .post-title {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .post-title a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .post-title a:hover {
+            text-decoration: underline;
+        }
+
+        .like-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #007bff;
+        }
+
+        .like-button:hover {
+            color: #0056b3;
+        }
+
+        .like-count {
+            margin-right: 10px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination form {
+            margin: 0;
+        }
+
+        .pagination a {
+            padding: 10px;
+            margin: 0 5px;
+            text-decoration: none;
+            color: #007bff;
+            display: inline-block;
+        }
+
+        .pagination a:hover {
+            text-decoration: underline;
+        }
+
+        .form-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #tag {
+            width: 20ch;
+        }
+
+        .search-tag {
+            cursor: pointer;
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .search-tag:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<h1>Лента постов</h1>
+
+<div class="form-inline">
+    <button class="btn-add" onclick="toggleForm()">Добавить пост</button>
+
+    <form th:action="@{/}" method="get">
+        <input type="hidden" name="page" th:value="${page.number}">
+        <input type="hidden" name="size" th:value="${size}">
+        <input type="text" id="tag" name="tag" th:value="${tag}" placeholder="Введите тег" />
+        <span class="search-tag" onclick="this.closest('form').submit()">Поиск по тегу</span>
+    </form>
+</div>
+
+<!-- Форма добавления поста -->
+<div id="addPostForm" style="display: none; margin-top: 20px; border: 1px solid #ccc; padding: 10px;">
+    <h2>Добавить новый пост</h2>
+    <form th:action="@{/addPost}" method="post">
+        <label for="title">Заголовок:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="content">Содержание:</label>
+        <textarea id="content" name="content" required style="width: 100%; height: 150px;"></textarea>
+
+        <label for="imageUrl">URL изображения:</label>
+        <input type="text" id="imageUrl" name="imageUrl" required>
+
+        <label for="tags">Теги (через запятую):</label>
+        <input type="text" id="tags" name="tags">
+
+        <button type="submit">Сохранить</button>
+        <button type="button" onclick="toggleForm()">Отмена</button>
+    </form>
+</div>
+
+<script>
+    function toggleForm() {
+        var form = document.getElementById("addPostForm");
+        form.style.display = form.style.display === "none" ? "block" : "none";
+    }
+</script>
+<!-- Форма для выбора количества постов на странице -->
+<form th:action="@{/}" method="get">
+    <input type="hidden" name="page" th:value="${page.number}">
+    <input type="hidden" name="tag" th:value="${tag}">
+    <label for="size">Постов на странице:</label>
+    <select id="size" name="size" onchange="this.form.submit()">
+        <option value="10" th:selected="${size == 10}">10</option>
+        <option value="20" th:selected="${size == 20}">20</option>
+        <option value="50" th:selected="${size == 50}">50</option>
+    </select>
+</form>
+<div class="pagination">
+    <!-- Ссылка на предыдущую страницу -->
+    <form th:action="@{/}" method="get">
+        <input type="hidden" name="page" th:value="${page.number - 1}" />
+        <input type="hidden" name="tag" th:value="${tag}" />
+        <input type="hidden" name="size" th:value="${size}" />
+        <a href="#" th:if="${!page.first}" th:onclick="this.closest('form').submit()">← Предыдущая</a>
+    </form>
+
+    <!-- Ссылка на следующую страницу -->
+    <form th:action="@{/}" method="get">
+        <input type="hidden" name="page" th:value="${page.number + 1}" />
+        <input type="hidden" name="tag" th:value="${tag}" />
+        <input type="hidden" name="size" th:value="${size}" />
+        <a href="#" th:if="${!page.last}" th:onclick="this.closest('form').submit()">Следующая →</a>
+    </form>
+</div>
+
+<div class="pagination-info">
+    <span>Страница <span th:text="${page.number + 1}"></span> из <span th:text="${page.totalPages}"></span></span>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th class="image-cell">Картинка</th>
+        <th class="content-cell">Заголовок и краткое содержание</th>
+        <th class="info-cell">Лайки и комментарии</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post : ${posts}">
+        <td class="image-cell">
+            <a th:href="@{/post/{id}(id=${post.id})}">
+                <img th:src="${post.imageUrl}" alt="Post Image">
+            </a>
+        </td>
+        <td class="content-cell">
+            <div class="post-title">
+                <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}"></a>
+            </div>
+            <br>
+            <br>
+            <div th:text="${#strings.abbreviate(post.content, 70)}" style="white-space: normal;"></div>
+            <br>
+            <br>
+            <div>Теги: <span th:text="${post.tags}">...</span></div>
+        </td>
+        <td class="info-cell">
+
+            <form th:action="@{/like/{id}(id=${post.id})}" method="post">
+                <input type="hidden" name="tag" th:value="${tag}">
+                <input type="hidden" name="page" th:value="${page.number}">
+                <input type="hidden" name="size" th:value="${size}">
+                <button class="like-button">👍</button>
+                <span class="like-count" th:text="${post.likesCount}">0</span>
+            </form>
+
+            <br>
+            <div>Комментарии: <span th:text="${post.commentCount}">0</span></div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="pagination">
+    <!-- Ссылка на предыдущую страницу -->
+    <form th:action="@{/}" method="get">
+        <input type="hidden" name="page" th:value="${page.number - 1}" />
+        <input type="hidden" name="tag" th:value="${tag}" />
+        <input type="hidden" name="size" th:value="${size}" />
+        <a href="#" th:if="${!page.first}" th:onclick="this.closest('form').submit()"><-- Предыдущая</a>
+    </form>
+
+    <!-- Ссылка на следующую страницу -->
+    <form th:action="@{/}" method="get">
+        <input type="hidden" name="page" th:value="${page.number + 1}" />
+        <input type="hidden" name="tag" th:value="${tag}" />
+        <input type="hidden" name="size" th:value="${size}" />
+        <a href="#" th:if="${!page.last}" th:onclick="this.closest('form').submit()">Следующая --></a>
+    </form>
+</div>
+
+</body>
+</html>
