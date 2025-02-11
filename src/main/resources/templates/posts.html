@@ -203,17 +203,21 @@
         <input type="hidden" name="page" th:value="${page.number - 1}" />
         <input type="hidden" name="tag" th:value="${tag}" />
         <input type="hidden" name="size" th:value="${size}" />
-        <a href="#" th:if="${!page.first}" th:onclick="this.closest('form').submit()"><-- Предыдущая</a>
+        <a href="#" th:if="${!page.first}" th:onclick="this.closest('form').submit()">← Предыдущая</a>
     </form>
+
     <!-- Ссылка на следующую страницу -->
     <form th:action="@{/}" method="get">
         <input type="hidden" name="page" th:value="${page.number + 1}" />
         <input type="hidden" name="tag" th:value="${tag}" />
         <input type="hidden" name="size" th:value="${size}" />
-        <a href="#" th:if="${!page.last}" th:onclick="this.closest('form').submit()">Следующая --></a>
+        <a href="#" th:if="${!page.last}" th:onclick="this.closest('form').submit()">Следующая →</a>
     </form>
 </div>
 
+<div class="pagination-info">
+    <span>Страница <span th:text="${page.number + 1}"></span> из <span th:text="${page.totalPages}"></span></span>
+</div>
 <table>
     <thead>
     <tr>

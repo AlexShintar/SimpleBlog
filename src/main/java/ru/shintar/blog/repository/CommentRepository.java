@@ -1,20 +1,22 @@
 package ru.shintar.blog.repository;
 
-import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.stereotype.Repository;
-import ru.shintar.blog.entity.Comment;
-import ru.shintar.blog.entity.Post;
+import ru.shintar.blog.model.Comment;
 
 import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository {
+    List<Comment> findAllByPostId(Long postId);
 
-    List<Comment> findAllByPost(Post post);
-    int countByPost(Post post);
-    @Transactional
-    @Modifying
+    int countByPostId(Long postId);
+
     void deleteByPostId(Long postId);
+
+    Optional<Comment> findById(Long id);
+
+    void save(Comment comment);
+
+    void update(Comment comment);
+
+    void deleteById(Long id);
 }

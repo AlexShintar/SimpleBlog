@@ -7,14 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.shintar.blog.entity.Comment;
-import ru.shintar.blog.entity.Post;
+import ru.shintar.blog.model.Comment;
+import ru.shintar.blog.model.Post;
 import ru.shintar.blog.service.CommentService;
 import ru.shintar.blog.service.PostService;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -55,8 +53,7 @@ public class PostController {
         post.setTitle(title);
         post.setContent(content);
         post.setImageUrl(imageUrl);
-//        post.setUpdatedAt(LocalDateTime.now());
-        post.setTags(Optional.ofNullable(tags).orElse(""));
+        post.setTags(tags);
 
         postService.save(post);
         return "redirect:/";
@@ -66,11 +63,11 @@ public class PostController {
     public String getPost(@PathVariable Long id, Model model) {
         Post post = postService.getPostById(id);
 
-        List<Comment> comments = commentService.getComments(post);
+        List<Comment> comments = commentService.getComments(id);
 
         model.addAttribute("post", post);
         model.addAttribute("comments", comments);
-        model.addAttribute("currentUrl",  "/post/" + id);
+        model.addAttribute("currentUrl", "/post/" + id);
         return "post";
     }
 
