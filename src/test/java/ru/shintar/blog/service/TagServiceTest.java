@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.shintar.blog.config.TagServiceTestConfig;
-import ru.shintar.blog.entity.Post;
-import ru.shintar.blog.entity.Tag;
+import ru.shintar.blog.model.Post;
+import ru.shintar.blog.model.Tag;
 import ru.shintar.blog.repository.TagRepository;
 
 import java.util.List;
@@ -55,21 +55,21 @@ class TagServiceTest {
 
     @Test
     void getTags_shouldReturnCommaSeparatedTags() {
-        Post post = new Post();
-        List<Tag> tags = List.of(new Tag("java", post), new Tag("spring", post));
-        when(tagRepository.findAllByPost(post)).thenReturn(tags);
+        Long postId = 3L;
+        List<Tag> tags = List.of(new Tag("java", postId), new Tag("spring", postId));
+        when(tagRepository.findAllByPostId(postId)).thenReturn(tags);
 
-        String result = tagService.getTags(post);
+        String result = tagService.getTags(postId);
 
         assertEquals("java, spring", result);
     }
 
     @Test
     void getTags_whenNoTags_shouldReturnEmptyString() {
-        Post post = new Post();
-        when(tagRepository.findAllByPost(post)).thenReturn(List.of());
+        Long postId = 3L;
+        when(tagRepository.findAllByPostId(postId)).thenReturn(List.of());
 
-        String result = tagService.getTags(post);
+        String result = tagService.getTags(postId);
 
         assertEquals("", result);
     }

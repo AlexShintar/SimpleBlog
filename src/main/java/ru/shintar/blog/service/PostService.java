@@ -1,13 +1,16 @@
 package ru.shintar.blog.service;
 
 import lombok.RequiredArgsConstructor;
-import net.datafaker.Faker;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.shintar.blog.model.Comment;
 import ru.shintar.blog.model.Post;
 import ru.shintar.blog.repository.PostRepository;
+import ru.shintar.blog.util.RandomDataGenerator;
+
+import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
@@ -17,7 +20,6 @@ public class PostService {
     private final TagService tagService;
     private final LikeService likeService;
     private final CommentService commentService;
-    Faker faker = new Faker();
 
     public Page<Post> getPosts(Pageable pageable, String tag) {
         Page<Post> posts = (tag == null || tag.isBlank())
@@ -42,25 +44,16 @@ public class PostService {
 
     @Transactional
     public void rnd() {
-        for (int i = 0; i < 30; i++) {
-            Post post = new Post();
-            post.setTitle(faker.company().name());
-            post.setContent(faker.lorem().sentence(100));
-            post.setImageUrl("https://picsum.photos/id/"
-                    + faker.random().nextInt(90)
-                    + "/" + faker.random().nextInt(200, 300)
-                    + "/" + faker.random().nextInt(100, 200));
+        Random random = new Random();
+        int randomNumber = random.nextInt(9);
 
-            StringBuilder tagString = new StringBuilder();
-            tagString.append(faker.animal().name());
-            for (int j = 0; j < faker.random().nextInt(10); j++) {
-                tagString.append(", ").append(faker.animal().name());
-            }
-            post.setTags(tagString.toString());
+        for (int i = 0; i < 20 + randomNumber; i++) {
+            Post post = RandomDataGenerator.generateRandomPost();
             save(post);
 
-            for (int j = 0; j < faker.random().nextInt(10); j++) {
-                commentService.addComment(post.getId(), faker.lorem().sentence(20));
+            for (int j = 0; j < randomNumber; j++) {
+                Comment comment = RandomDataGenerator.generateRandomComment(post.getId());
+                commentService.addComment(post.getId(), comment.getContent());
             }
         }
     }

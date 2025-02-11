@@ -1,6 +1,5 @@
 package ru.shintar.blog.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.shintar.blog.config.CommentsServiceTestConfig;
-import ru.shintar.blog.entity.Comment;
-import ru.shintar.blog.entity.Post;
+import ru.shintar.blog.model.Comment;
+import ru.shintar.blog.model.Post;
 import ru.shintar.blog.repository.CommentRepository;
 import ru.shintar.blog.repository.PostRepository;
 
@@ -48,20 +47,20 @@ class CommentServiceTest {
         testComment = new Comment();
         testComment.setId(1L);
         testComment.setContent("Test Comment");
-        testComment.setPost(testPost);
+        testComment.setPostId(testPost.getId());
         testComment.setUpdatedAt(LocalDateTime.now());
     }
 
     @Test
     void getComments_ShouldReturnListOfComments() {
-        when(commentRepository.findAllByPost(testPost)).thenReturn(List.of(testComment));
+        when(commentRepository.findAllByPostId(testPost.getId())).thenReturn(List.of(testComment));
 
-        List<Comment> comments = commentService.getComments(testPost);
+        List<Comment> comments = commentService.getComments(testPost.getId());
 
         assertNotNull(comments);
         assertEquals(1, comments.size());
         assertEquals("Test Comment", comments.get(0).getContent());
-        verify(commentRepository, times(1)).findAllByPost(testPost);
+        verify(commentRepository, times(1)).findAllByPostId(testPost.getId());
     }
 
     @Test
@@ -77,7 +76,7 @@ class CommentServiceTest {
     void addComment_ShouldThrowException_WhenPostNotFound() {
         when(postRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(EntityNotFoundException.class,
+        Exception exception = assertThrows(RuntimeException.class,
                 () -> commentService.addComment(1L, "New Comment"));
 
         assertEquals("Пост не найден", exception.getMessage());
@@ -88,11 +87,10 @@ class CommentServiceTest {
     void updateComment_ShouldUpdateAndReturnPostId() {
         when(commentRepository.findById(1L)).thenReturn(Optional.of(testComment));
 
-        Long postId = commentService.updateComment(1L, "Updated Comment");
+        commentService.updateComment(1L, "Updated Comment");
 
-        assertEquals(1L, postId);
         assertEquals("Updated Comment", testComment.getContent());
-        verify(commentRepository, times(1)).save(testComment);
+        verify(commentRepository, times(1)).update(testComment);
     }
 
     @Test
@@ -113,7 +111,7 @@ class CommentServiceTest {
         Long postId = commentService.deleteComment(1L);
 
         assertEquals(1L, postId);
-        verify(commentRepository, times(1)).delete(testComment);
+        verify(commentRepository, times(1)).deleteById(1L);
     }
 
     @Test
@@ -128,12 +126,12 @@ class CommentServiceTest {
 
     @Test
     void getCommentCount_ShouldReturnCommentCount() {
-        when(commentRepository.countByPost(testPost)).thenReturn(5);
+        when(commentRepository.countByPostId(testPost.getId())).thenReturn(5);
 
-        int count = commentService.getCommentCount(testPost);
+        int count = commentService.getCommentCount(testPost.getId());
 
         assertEquals(5, count);
-        verify(commentRepository, times(1)).countByPost(testPost);
+        verify(commentRepository, times(1)).countByPostId(testPost.getId());
     }
 
     @Test

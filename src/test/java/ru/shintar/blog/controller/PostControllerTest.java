@@ -8,8 +8,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.shintar.blog.entity.Post;
-import ru.shintar.blog.service.CommentService;
+import ru.shintar.blog.model.Post;
 import ru.shintar.blog.service.PostService;
 
 

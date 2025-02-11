@@ -1,6 +1,5 @@
 package ru.shintar.blog.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.shintar.blog.config.LikeServiceTestConfig;
-import ru.shintar.blog.entity.Like;
-import ru.shintar.blog.entity.Post;
+import ru.shintar.blog.model.Like;
+import ru.shintar.blog.model.Post;
 import ru.shintar.blog.repository.LikeRepository;
 import ru.shintar.blog.repository.PostRepository;
 
@@ -32,41 +31,35 @@ class LikeServiceTest {
     @Autowired
     private LikeRepository likeRepository;
 
+    private Post testPost;
     @BeforeEach
     void setUp() {
         Mockito.reset(postRepository, likeRepository);
+        testPost = new Post();
+        testPost.setId(1L);
+
     }
 
     @Test
     void likePost_whenPostExists_shouldSaveLike() {
-        Long postId = 1L;
-        Post post = new Post();
-        post.setId(postId);
-        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
 
-        likeService.likePost(postId);
+        testPost.setId(testPost.getId());
+        when(postRepository.findById(testPost.getId())).thenReturn(Optional.of(testPost));
+
+        likeService.likePost(testPost.getId());
 
         verify(likeRepository, times(1)).save(any(Like.class));
     }
 
     @Test
-    void likePost_whenPostDoesNotExist_shouldThrowException() {
-        Long postId = 2L;
-        when(postRepository.findById(postId)).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () -> likeService.likePost(postId));
-        verify(likeRepository, never()).save(any(Like.class));
-    }
-
-    @Test
     void getLikeCount_shouldReturnLikeCount() {
-        Post post = new Post();
-        when(likeRepository.countByPost(post)).thenReturn(5);
 
-        int count = likeService.getLikeCount(post);
+        when(likeRepository.countByPostId(testPost.getId())).thenReturn(5);
+
+        int count = likeService.getLikeCount(testPost.getId());
 
         assertEquals(5, count);
-        verify(likeRepository, times(1)).countByPost(post);
+        verify(likeRepository, times(1)).countByPostId(testPost.getId());
     }
 
     @Test

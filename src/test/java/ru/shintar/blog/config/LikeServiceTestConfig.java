@@ -22,6 +22,6 @@ public class LikeServiceTestConfig {
 
     @Bean
     public LikeService likeService() {
-        return new LikeService(postRepository(), likeRepository());
+        return new LikeService(likeRepository());
     }
 }
