@@ -44,13 +44,11 @@ public class PostService {
 
     @Transactional
     public void rnd() {
-        Random random = new Random();
-        int randomNumber = random.nextInt(9);
-
-        for (int i = 0; i < 20 + randomNumber; i++) {
+        for (int i = 0; i < 30; i++) {
             Post post = RandomDataGenerator.generateRandomPost();
             save(post);
-
+            Random random = new Random();
+            int randomNumber = random.nextInt(9);
             for (int j = 0; j < randomNumber; j++) {
                 Comment comment = RandomDataGenerator.generateRandomComment(post.getId());
                 commentService.addComment(post.getId(), comment.getContent());

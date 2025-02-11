@@ -18,13 +18,13 @@ public class CommentController {
         return "redirect:/post/" + postId;
     }
 
-    @PostMapping("/edit/{id}")
+    @PostMapping("/{id}/edit")
     public String updateComment(@PathVariable Long id, @RequestParam String content) {
         Long postId = commentService.updateComment(id, content);
         return "redirect:/post/" + postId;
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/{id}/delete")
     public String deleteComment(@PathVariable Long id) {
         Long postId = commentService.deleteComment(id);
         return "redirect:/post/" + postId;

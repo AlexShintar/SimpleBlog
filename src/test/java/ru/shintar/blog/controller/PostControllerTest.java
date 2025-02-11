@@ -66,7 +66,7 @@ class PostControllerTest {
     @Test
     void editPost_shouldRedirectToPostPage() throws Exception {
         Long postId = 1L;
-        mockMvc.perform(post("/post/edit/" + postId)
+        mockMvc.perform(post("/post/" + postId + "/edit")
                         .param("title", "Updated Title")
                         .param("content", "Updated Content"))
                 .andExpect(status().is3xxRedirection())
@@ -78,7 +78,7 @@ class PostControllerTest {
     @Test
     void deletePost_shouldRedirectToHome() throws Exception {
         Long postId = 1L;
-        mockMvc.perform(post("/post/delete/" + postId))
+        mockMvc.perform(post("/post/" + postId + "/delete"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
 

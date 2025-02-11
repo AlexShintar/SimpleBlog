@@ -71,13 +71,13 @@ public class PostController {
         return "post";
     }
 
-    @PostMapping("/post/edit/{id}")
+    @PostMapping("/post/{id}/edit")
     public String editPost(@PathVariable Long id, @ModelAttribute Post postData) {
         postService.updatePost(id, postData);
         return "redirect:/post/" + id;
     }
 
-    @PostMapping("/post/delete/{id}")
+    @PostMapping("/post/{id}/delete")
     public String deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return "redirect:/";

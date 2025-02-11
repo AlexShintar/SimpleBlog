@@ -110,7 +110,7 @@
 
     <div id="deleteForm" class="hidden-form">
         <h2>Вы уверены, что хотите удалить пост?</h2>
-        <form th:action="@{/post/delete/{id}(id=${post.id})}" method="post">
+        <form th:action="@{/post/{id}/delete(id=${post.id})}" method="post">
             <button type="submit" class="delete-button">Подтвердить удаление</button>
             <button type="button" onclick="toggleForm('deleteForm')">Отмена</button>
         </form>
@@ -118,7 +118,7 @@
 
     <div id="editForm" class="hidden-form">
         <h2>Редактировать пост</h2>
-        <form th:action="@{/post/edit/{id}(id=${post.id})}" method="post">
+        <form th:action="@{/post/{id}/edit(id=${post.id})}" method="post">
             <label for="title">Заголовок:</label>
             <input type="text" id="title" name="title" th:value="${post.title}" required>
 
@@ -166,11 +166,11 @@
             <span class="comment-time" th:text="${#temporals.format(comment.updatedAt, 'dd-MM-yyyy HH:mm')}"></span>
             <span class="comment-actions">
                 <a href="#" th:attr="onclick=|toggleForm('editCommentForm' + ${comment.id})|">Редактировать</a> |
-                <a th:href="@{/comment/delete/{id}(id=${comment.id})}">Удалить комментарий</a>
+                <a th:href="@{/comment/{id}/delete(id=${comment.id})}">Удалить комментарий</a>
             </span>
             <div th:id="|editCommentForm${comment.id}|" class="hidden-form">
                 <h2>Редактировать</h2>
-                <form th:action="@{/comment/edit/{id}(id=${comment.id})}" method="post">
+                <form th:action="@{/comment/{id}/edit(id=${comment.id})}" method="post">
                     <label th:for="|editContent${comment.id}|">Комментарий:</label>
                     <textarea th:id="|editContent${comment.id}|" name="content" required
                               th:text="${comment.content}"></textarea>
@@ -179,7 +179,6 @@
                     </button>
                 </form>
             </div>
-
         </div>
     </div>
 

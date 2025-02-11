@@ -54,7 +54,7 @@ public class CommentControllerTest {
 
         when(commentService.updateComment(commentId, newContent)).thenReturn(postId);
 
-        mockMvc.perform(post("/comment/edit/{id}", commentId)
+        mockMvc.perform(post("/comment/{id}/edit", commentId)
                         .param("content", newContent))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/post/" + postId));
@@ -69,7 +69,7 @@ public class CommentControllerTest {
 
         when(commentService.deleteComment(commentId)).thenReturn(postId);
 
-        mockMvc.perform(get("/comment/delete/{id}", commentId))
+        mockMvc.perform(get("/comment/{id}/delete", commentId))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/post/" + postId));
 
